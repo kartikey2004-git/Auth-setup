@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
 
+
 export const register = async (req, res) => {
   // Get user details from frontend ( extract all data points ) : we need email,password ,name which we get from req.body
 
@@ -195,7 +196,7 @@ export const sendVerifyOtp = async (req, res) => {
 
     user.verifyOtpExpireAt = Date.now() + 24 * 60 * 60 * 1000;
 
-    // now we have to this user
+    // now we have to save this user
 
     await user.save();
 
@@ -223,6 +224,7 @@ export const sendVerifyOtp = async (req, res) => {
 // function that will get the OTP and verify the user's account :: suppose user has recieved OTP on their email , then we have to enter the OTP in web application and the account will be verified 
 
 
+// Verify the email using OTP
 export const verifyEmail = async (req,res) => {
  
   // we need user id , so we can verify the account and we need otp also
@@ -285,3 +287,147 @@ export const verifyEmail = async (req,res) => {
 
 // cookie --> token ---> user.id and that userId will be added in req.body
 
+
+
+
+// Check if user is authenticated
+export const isAuthenticated = async (req,res) => {
+  try {
+
+    // before this controller function , we will execute the middleware and the middleware will be executed
+
+    return res.json({ success: true , message: "User Authenticated"})
+
+  } catch (error) {
+    res.json({ success: false , message:  error.message})
+  }
+}
+
+
+// Send password reset OTP ( controller function that will send the password reset OTP to user)
+
+export const sendResetOtp = async (req,res) => {
+  
+  // first we have to get the email Id from req.body , so whenever user try to reset the password , it need to provide email Id 
+
+  const { email } = req.body
+
+  if(!email){
+    res.json({ success: false , message: "Email is required"})
+  }
+
+  try {
+
+    // firstly we need to find the user using the given email Id
+
+    const user = await userModel.findOne({email})
+
+    if(!user){
+      return res.json({success: false, message: "User not found"})
+    }
+
+    // if user is present in database with this email Id , then we'll generate one OTP and OTP will be saved in database and that OTP will sent on email
+  
+    // it will generate a random six digit number
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+
+    // now we have to save this OTP in database for this particular user
+
+    user.resetOtp = otp;
+
+    // now we have to set expiry time for this OTP after one day (15 min)
+
+    user.resetOtpExpireAt = Date.now() +  15 * 60 * 1000;
+
+    // now we have to save this user
+
+    await user.save();
+
+    // after updating users data , we will send the email where we send OTP to the user
+
+    const mailOption = {
+      from: process.env.SENDER_EMAIL, // sender's mail id
+
+      to: user.email, // user who has created the account
+
+      subject: "Password Reset OTP",
+      text: `Your OTP for resetting your password is ${otp}. Use this OTP to proceed with resetting your password`,
+    };
+
+    await transporter.sendMail(mailOption);
+
+    return res.json({ success: true , message: 'OTP sent to your email'})
+    
+  } catch (error) {
+    res.json({ success: false , message: error.message})
+  }
+
+  // we have to check this user exists with email or not
+
+
+
+
+}
+
+
+// controller function where user can verify the OTP and reset the password 
+
+
+// Reset User Password
+
+export const resetPassword = async (req,res) => {
+  
+  // we need to extract datapoints like reset OTP,email Id,new password for setting new password from req.body
+
+  const { email , otp , newPassword } = req.body
+
+  if(!email || !otp || !newPassword){
+    return res.json({ success: false , message: 'Email , OTP and new password are required'})
+  }
+
+  try {
+
+    // try to find user in the database with the help of email Id 
+
+    const user = await userModel.findOne({email})
+
+    if(!user){
+      return res.json({ success: false , message: "User not found"})
+    }
+
+    // Check the reset otp user provided is valid or not || and check the otp in database is match with the otp that user provdes
+
+    
+    if(user.resetOtp === "" || user.resetOtp !== otp){
+      return res.json({ success: false , message: 'Invalid OTP'})
+    }
+
+    // check for the expiry date of reset OTP 
+    if(user.resetOtpExpireAt < Date.now()){
+      return res.json({ success: false , message: 'OTP Expired'})
+    }
+
+    // now we have to update user's password with newPassword but firstly we need to encrypt it before saving in database
+
+
+    // Asynchronously generates a hash for the given password and Salt length to generate or salt to use
+
+    const hashedPassword = await bcrypt.hash(newPassword,10)
+
+    // now update the password in user's database and reset the otp and otp expiry in database
+
+    user.password = hashedPassword;
+    user.resetOtp = '';
+    user.resetOtpExpireAt = 0;
+
+    // now we have to save the user
+
+    await user.save();
+
+    return res.json({ success: true , message: 'Password has been reset successfully'})
+    
+  } catch (error) {
+    return res.json({ success: false , message:  error.message})
+  }
+}

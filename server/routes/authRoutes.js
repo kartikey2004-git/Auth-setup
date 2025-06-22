@@ -1,7 +1,7 @@
 // authentication routes
 
 import express from "express";
-import { login, logout, register, sendVerifyOtp, verifyEmail } from "../controllers/authController.js";
+import { isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, verifyEmail } from "../controllers/authController.js";
 import userAuth from "../middleware/userAuth.js";
 
 const authRouter = express.Router();
@@ -17,6 +17,21 @@ authRouter.post("/logout", logout);
 authRouter.post("/send-verify-otp",userAuth,sendVerifyOtp)
 
 authRouter.post("/verify-account", userAuth , verifyEmail)
+
+
+// API to check user is loggedIn or not 
+authRouter.get('/is-auth',userAuth,isAuthenticated)
+
+
+// API to send password reset OTP and API to reset password using otp 
+
+authRouter.post("/send-reset-otp",sendResetOtp)
+
+authRouter.post("/reset-password",resetPassword)
+
+
+
+
 
 export default authRouter;
 
@@ -62,7 +77,3 @@ SMTP ka full form hai Simple Mail Transfer Protocol. Yeh ek standard protocol ha
 
 
 // To send email , we need to create SMTP account from where we get host, port , and authentication details  and with the help of transporter we send the mail to client
-
-
-
-
