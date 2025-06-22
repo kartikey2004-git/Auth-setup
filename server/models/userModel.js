@@ -26,7 +26,10 @@ const userSchema = new mongoose.Schema({
 },{timestamps: true});
 
 
-export const User = mongoose.models.User || mongoose.model("User", userSchema); // avoid creating mongoose models , if user model already exist 
+const userModel =  mongoose.models.user || mongoose.model("user", userSchema); // avoid creating mongoose models , if user model already exist 
+
+
+export default userModel
 
 
 // Now we can use this user model to store data of user in mongoDB database
@@ -35,14 +38,10 @@ export const User = mongoose.models.User || mongoose.model("User", userSchema); 
 /* 
 
 mongoose.models holds already-registered models.
-
 So it reuses the model if already defined.
-
 Prevents re-registering and avoids runtime errors.
 
-*/
 
-/* 
 
 mongoose model jab database se connect ho jayega toh files automatically run hojati h and database ka ek structure taiyaar hojata h
 
