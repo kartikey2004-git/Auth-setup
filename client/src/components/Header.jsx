@@ -1,0 +1,34 @@
+import React from "react";
+import { Handshake } from "lucide-react";
+import { Button } from "./ui/button";
+
+const Header = () => {
+  return (
+    <section className="flex justify-center items-center min-h-screen px-4 sm:px-24 bg-background text-foreground">
+      <div className="text-center space-y-6 max-w-2xl">
+        
+
+        <h1 className="text-3xl sm:text-5xl font-bold flex justify-center items-center gap-3">
+          Hey Dev <Handshake className="w-7 h-7 text-primary aspect-square" />
+        </h1>
+
+        
+        <h2 className="text-xl sm:text-2xl font-semibold">
+          Welcome to our app
+        </h2>
+
+        
+        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+          Let’s start with a quick product tour and we’ll have you up and running in no time.
+        </p>
+
+        
+        <Button size="lg" className="px-6 py-3 text-base sm:text-lg rounded-full">
+          Get Started
+        </Button>
+      </div>
+    </section>
+  );
+};
+
+export default Header;
