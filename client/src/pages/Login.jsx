@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,144 +12,295 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IoIosContact } from "react-icons/io";
+import { MdEmail } from "react-icons/md";
+import { RiLockPasswordLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "@/context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Auth = () => {
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { backendUrl, setIsloggedIn, getUserData } = useContext(AppContext);
+
+  const [form, setForm] = useState({
+    login: { email: "", password: "" },
+    register: { name: "", email: "", password: "" },
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (tab, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      [tab]: {
+        ...prev[tab],
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleSubmit = async (tab) => {
+    console.log("Submitted:", form[tab]);
+
+    const { name, email, password } = form[tab];
+    axios.defaults.withCredentials = true;
+    setLoading(true);
+
+    try {
+      let response;
+
+      if (tab === "register") {
+        response = await axios.post(backendUrl + "/api/auth/register", {
+          name,
+          email,
+          password,
+        });
+      } else if (tab === "login") {
+        response = await axios.post(backendUrl + "/api/auth/login", {
+          email,
+          password,
+        });
+      }
+
+      const data = response?.data;
+
+      if (data?.success) {
+        toast.success(data.message || "Success!");
+        setIsloggedIn(true);
+        getUserData();
+        navigate("/");
+      } else {
+        toast.error(data.message || "Authentication failed");
+      }
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        error.message ||
+        "Something went wrong";
+      toast.error(msg);
+      console.error("Auth Error:", msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen px-4 bg-background text-foreground">
+      <div className="w-full max-w-sm">
+        <Tabs defaultValue="signup" className="w-full mt-8">
+          <TabsList className="grid grid-cols-2 w-full">
+            <TabsTrigger value="signup">Signup</TabsTrigger>
+            <TabsTrigger value="login">Login</TabsTrigger>
+          </TabsList>
 
-      <div className="w-full max-w-sm flex flex-col gap-6 items-center">
-        
-        <form>
-          <Tabs defaultValue="signup">
-            <TabsList>
-              <TabsTrigger value="signup">Signup</TabsTrigger>
-              <TabsTrigger value="login">Login</TabsTrigger>
-            </TabsList>
+          {/* LOGIN TAB */}
+          <TabsContent value="login">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl sm:text-2xl font-light">
+                  Login to Your Account
+                </CardTitle>
+                <CardDescription className="text-sm sm:text-base text-muted-foreground">
+                  Enter your credentials to continue.
+                </CardDescription>
+              </CardHeader>
 
-            <TabsContent value="signup">
-              <Card>
-                <CardHeader className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-xl sm:text-2xl font-light">
-                      Create Your Account
-                    </CardTitle>
-                    <IoIosContact className="w-7 h-7 text-primary" />
-                  </div>
-                  <CardDescription className="text-sm sm:text-base text-muted-foreground">
-                    Sign up to unlock all features. It only takes a moment to
-                    get started.
-                  </CardDescription>
-                </CardHeader>
+              <CardContent className="grid gap-6">
+                <div className="grid gap-3">
+                  <Label htmlFor="login-email">Email</Label>
 
-                <CardContent className="grid gap-6">
-                  <div className="grid gap-3">
-                    <Label htmlFor="signup-name">Full Name</Label>
+                  <Input
+                    id="login-email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={form.login.email}
+                    onChange={(e) =>
+                      handleChange("login", "email", e.target.value)
+                    }
+                    required
+                  />
+                </div>
 
-                    <Input
-                      id="signup-name"
-                      type="text"
-                      placeholder="e.g. Kartikey Bhatnagar"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                    />
-                  </div>
+                <div className="grid gap-3">
+                  {/* Label */}
+                  <Label
+                    htmlFor="login-password"
+                    className="flex items-center gap-2"
+                  >
+                    <RiLockPasswordLine className="w-5 h-5" />
+                    Password
+                  </Label>
 
-                  <div className="grid gap-3">
-                    <Label htmlFor="signup-email">Email Address</Label>
-
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="e.g. you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid gap-3">
-                    <Label htmlFor="signup-password">Password</Label>
-
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="Create a strong password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className="text-right text-sm">
-                    <p
-                      onClick={() => navigate("/reset-password")}
-                      className="text-primary hover:underline"
-                    >
-                      Forgot password?
-                    </p>
-                  </div>
-                </CardContent>
-
-                <CardFooter>
-                  <Button className="w-full">Create Account</Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="login">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Login to Your Account</CardTitle>
-                  <CardDescription>
-                    Enter your credentials to continue.
-                  </CardDescription>
-                </CardHeader>
-
-                <CardContent className="grid gap-6">
-                  <div className="grid gap-3">
-                    <Label htmlFor="login-identifier">Email</Label>
-
-                    <Input
-                      id="login-identifier"
-                      type="text"
-                      placeholder="you@example.com"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid gap-3">
-                    <Label htmlFor="login-password">Password</Label>
-
+                  {/* Input + Eye Icon Wrapper */}
+                  <div className="relative">
                     <Input
                       id="login-password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
+                      value={form.login.password}
+                      onChange={(e) =>
+                        handleChange("login", "password", e.target.value)
+                      }
                       required
+                      className="pr-10"
                     />
-                  </div>
 
-                  <div className="text-right text-sm">
-                    <a href="#" className="text-primary hover:underline">
-                      Forgot password?
-                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 inset-y-0 my-auto text-muted-foreground focus:outline-none"
+                    >
+                      {showPassword ? (
+                        <FiEyeOff className="w-5 h-5" />
+                      ) : (
+                        <FiEye className="w-5 h-5" />
+                      )}
+                    </button>
                   </div>
-                </CardContent>
+                </div>
 
-                <CardFooter>
-                  <Button className="w-full">Login</Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </form>
+                <div className="text-right text-sm">
+                  <p
+                    onClick={() => navigate("/reset-password")}
+                    className="text-primary hover:underline cursor-pointer"
+                  >
+                    Forgot password?
+                  </p>
+                </div>
+              </CardContent>
+
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  onClick={() => handleSubmit("login")}
+                >
+                  {loading ? "Logging in..." : "Login"}
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+
+          {/* SIGNUP TAB */}
+          <TabsContent value="signup">
+            <Card>
+              <CardHeader className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <CardTitle className="text-xl sm:text-2xl font-light">
+                    Create Your Account
+                  </CardTitle>
+                </div>
+                <CardDescription className="text-sm sm:text-base text-muted-foreground">
+                  Sign up to unlock all features.
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="grid gap-6">
+                <div className="grid gap-3">
+                  <Label htmlFor="register-name">
+                    <IoIosContact className="w-5 h-5" />
+                    Full Name
+                  </Label>
+
+                  <Input
+                    id="register-name"
+                    type="text"
+                    placeholder="e.g. Kartikey Bhatnagar"
+                    value={form.register.name}
+                    onChange={(e) =>
+                      handleChange("register", "name", e.target.value)
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-3">
+                  <Label htmlFor="register-email">
+                    <MdEmail className="w-5 h-5" />
+                    Email Address
+                  </Label>
+
+                  <Input
+                    id="register-email"
+                    type="email"
+                    placeholder="e.g. you@example.com"
+                    value={form.register.email}
+                    onChange={(e) =>
+                      handleChange("register", "email", e.target.value)
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-3">
+                  {/* Label */}
+                  <Label
+                    htmlFor="register-password"
+                    className="flex items-center gap-2"
+                  >
+                    <RiLockPasswordLine className="w-5 h-5" />
+                    Password
+                  </Label>
+
+                  {/* Input + Eye Icon Container */}
+                  <div className="relative">
+                    <Input
+                      id="register-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create a strong password"
+                      value={form.register.password}
+                      onChange={(e) =>
+                        handleChange("register", "password", e.target.value)
+                      }
+                      required
+                      className="pr-10"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 inset-y-0 my-auto text-muted-foreground focus:outline-none"
+                    >
+                      {showPassword ? (
+                        <FiEyeOff className="w-5 h-5" />
+                      ) : (
+                        <FiEye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-right text-sm">
+                  <p
+                    onClick={() => navigate("/reset-password")}
+                    className="text-primary hover:underline cursor-pointer"
+                  >
+                    Forgot password?
+                  </p>
+                </div>
+              </CardContent>
+
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  onClick={() => handleSubmit("register")}
+                  disabled={
+                    loading ||
+                    !form.register.name.trim() ||
+                    !form.register.email.trim() ||
+                    !form.register.password.trim()
+                  }
+                >
+                  {loading ? "Creating Account..." : "Create Account"}
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
