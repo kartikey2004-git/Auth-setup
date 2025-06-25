@@ -1,19 +1,47 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import EmailVerify from "./pages/EmailVerify";
 import ResetPassword from "./pages/ResetPassword";
 import Auth from "./pages/Login";
+import AppLayout from "./layout/AppLayout";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "./components/ui/sonner";
+
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: "/login",
+        element: <Auth />,
+      },
+      {
+        path: "/verify-email",
+        element: <EmailVerify />,
+      },
+      {
+        path: "/reset-password",
+        element: <ResetPassword />,
+      },
+    ],
+  },
+]);
 
 const App = () => {
-  return <div>
-    <Routes>
-      <Route path="/" element={<Home/>}/>
-      <Route path="/auth" element={<Auth/>}/>
-      <Route path="/verify-email" element={<EmailVerify/>}/>
-      <Route path="/reset-password" element={<ResetPassword/>}/>
-    </Routes>
-  </div>;
+  return (
+    <>
+      <RouterProvider router={router} />
+      {/* <ToastContainer position="top-right" autoClose={3000} /> */}
+      <Toaster/>
+    </>
+  );
 };
 
 export default App;
