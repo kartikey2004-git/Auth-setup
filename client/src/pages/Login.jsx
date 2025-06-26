@@ -17,10 +17,11 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "@/context/AppContext";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Auth = () => {
+  
   const navigate = useNavigate();
   const { backendUrl, setIsloggedIn, getUserData } = useContext(AppContext);
 
