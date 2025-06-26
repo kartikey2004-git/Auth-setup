@@ -4,6 +4,7 @@ import { AppContext } from "@/context/AppContext";
 import axios from "axios";
 import { LockIcon, MailIcon } from "lucide-react";
 import React, { useContext, useRef, useState } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -11,6 +12,8 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const { backendUrl } = useContext(AppContext);
   axios.defaults.withCredentials = true;
+
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const [email, setEmail] = useState();
   const [newPassword, setNewPassword] = useState();
@@ -166,14 +169,28 @@ const ResetPassword = () => {
 
           <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-lg bg-black text-white">
             <LockIcon className="h-5 w-5" />
-            <Input
-              type="password"
-              placeholder="Password"
-              className="bg-transparent text-white placeholder-gray-300 dark:placeholder-gray-400 outline-none border-none focus:ring-0 p-0"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-            />
+            <div className="relative">
+              <Input
+                 type={showNewPassword ? "text" : "password"}
+                placeholder="Password"
+                className="bg-transparent text-white placeholder-gray-300 pr-24 dark:placeholder-gray-400 outline-none border-none"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowNewPassword((prev) => !prev)}
+                className="absolute right-3 inset-y-0 my-auto text-muted-foreground focus:outline-none"
+              >
+                {showNewPassword ? (
+                  <FiEyeOff className="w-5 h-5" />
+                ) : (
+                  <FiEye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
 
           <Button className="w-full py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-all">
