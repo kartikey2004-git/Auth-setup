@@ -28,7 +28,10 @@ client se aane wale cookies ko parse karne ka kaam karti hai, taaki tum unhe req
 
 */
 
-app.use(cors({ credentials: true })); // so that we can send cookies in response
+const allowedOrigins = ['http://localhost:5173']
+
+
+app.use(cors({ origin: allowedOrigins ,credentials: true})); // so that we can send cookies in response
 
 // API endpoints
 app.get("/", (req, res) => {

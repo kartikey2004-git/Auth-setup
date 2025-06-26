@@ -21,10 +21,7 @@ import { toast } from "react-toastify";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Auth = () => {
-  const [showPassword, setShowPassword] = useState(false);
-
   const navigate = useNavigate();
-
   const { backendUrl, setIsloggedIn, getUserData } = useContext(AppContext);
 
   const [form, setForm] = useState({
@@ -33,6 +30,8 @@ const Auth = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
 
   const handleChange = (tab, field, value) => {
     setForm((prev) => ({
@@ -45,28 +44,18 @@ const Auth = () => {
   };
 
   const handleSubmit = async (tab) => {
-    console.log("Submitted:", form[tab]);
-
     const { name, email, password } = form[tab];
     axios.defaults.withCredentials = true;
     setLoading(true);
 
     try {
-      let response;
+      const endpoint =
+        tab === "register" ? "/api/auth/register" : "/api/auth/login";
 
-      if (tab === "register") {
-        response = await axios.post(backendUrl + "/api/auth/register", {
-          name,
-          email,
-          password,
-        });
-      } else if (tab === "login") {
-        response = await axios.post(backendUrl + "/api/auth/login", {
-          email,
-          password,
-        });
-      }
+      const payload =
+        tab === "register" ? { name, email, password } : { email, password };
 
+      const response = await axios.post(`${backendUrl}${endpoint}`, payload);
       const data = response?.data;
 
       if (data?.success) {
@@ -98,7 +87,7 @@ const Auth = () => {
             <TabsTrigger value="login">Login</TabsTrigger>
           </TabsList>
 
-          {/* LOGIN TAB */}
+          {/* Login Tab */}
           <TabsContent value="login">
             <Card>
               <CardHeader>
@@ -113,7 +102,6 @@ const Auth = () => {
               <CardContent className="grid gap-6">
                 <div className="grid gap-3">
                   <Label htmlFor="login-email">Email</Label>
-
                   <Input
                     id="login-email"
                     type="email"
@@ -127,7 +115,6 @@ const Auth = () => {
                 </div>
 
                 <div className="grid gap-3">
-                  {/* Label */}
                   <Label
                     htmlFor="login-password"
                     className="flex items-center gap-2"
@@ -135,12 +122,10 @@ const Auth = () => {
                     <RiLockPasswordLine className="w-5 h-5" />
                     Password
                   </Label>
-
-                  {/* Input + Eye Icon Wrapper */}
                   <div className="relative">
                     <Input
                       id="login-password"
-                      type={showPassword ? "text" : "password"}
+                      type={showLoginPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       value={form.login.password}
                       onChange={(e) =>
@@ -149,13 +134,14 @@ const Auth = () => {
                       required
                       className="pr-10"
                     />
-
                     <button
                       type="button"
-                      onClick={() => setShowPassword((prev) => !prev)}
+                      onClick={() =>
+                        setShowLoginPassword((prev) => !prev)
+                      }
                       className="absolute right-3 inset-y-0 my-auto text-muted-foreground focus:outline-none"
                     >
-                      {showPassword ? (
+                      {showLoginPassword ? (
                         <FiEyeOff className="w-5 h-5" />
                       ) : (
                         <FiEye className="w-5 h-5" />
@@ -178,6 +164,7 @@ const Auth = () => {
                 <Button
                   className="w-full"
                   onClick={() => handleSubmit("login")}
+                  disabled={loading}
                 >
                   {loading ? "Logging in..." : "Login"}
                 </Button>
@@ -185,15 +172,13 @@ const Auth = () => {
             </Card>
           </TabsContent>
 
-          {/* SIGNUP TAB */}
+          {/* Signup Tab */}
           <TabsContent value="signup">
             <Card>
-              <CardHeader className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <CardTitle className="text-xl sm:text-2xl font-light">
-                    Create Your Account
-                  </CardTitle>
-                </div>
+              <CardHeader>
+                <CardTitle className="text-xl sm:text-2xl font-light">
+                  Create Your Account
+                </CardTitle>
                 <CardDescription className="text-sm sm:text-base text-muted-foreground">
                   Sign up to unlock all features.
                 </CardDescription>
@@ -205,7 +190,6 @@ const Auth = () => {
                     <IoIosContact className="w-5 h-5" />
                     Full Name
                   </Label>
-
                   <Input
                     id="register-name"
                     type="text"
@@ -223,7 +207,6 @@ const Auth = () => {
                     <MdEmail className="w-5 h-5" />
                     Email Address
                   </Label>
-
                   <Input
                     id="register-email"
                     type="email"
@@ -237,7 +220,6 @@ const Auth = () => {
                 </div>
 
                 <div className="grid gap-3">
-                  {/* Label */}
                   <Label
                     htmlFor="register-password"
                     className="flex items-center gap-2"
@@ -245,12 +227,10 @@ const Auth = () => {
                     <RiLockPasswordLine className="w-5 h-5" />
                     Password
                   </Label>
-
-                  {/* Input + Eye Icon Container */}
                   <div className="relative">
                     <Input
                       id="register-password"
-                      type={showPassword ? "text" : "password"}
+                      type={showSignupPassword ? "text" : "password"}
                       placeholder="Create a strong password"
                       value={form.register.password}
                       onChange={(e) =>
@@ -259,13 +239,14 @@ const Auth = () => {
                       required
                       className="pr-10"
                     />
-
                     <button
                       type="button"
-                      onClick={() => setShowPassword((prev) => !prev)}
+                      onClick={() =>
+                        setShowSignupPassword((prev) => !prev)
+                      }
                       className="absolute right-3 inset-y-0 my-auto text-muted-foreground focus:outline-none"
                     >
-                      {showPassword ? (
+                      {showSignupPassword ? (
                         <FiEyeOff className="w-5 h-5" />
                       ) : (
                         <FiEye className="w-5 h-5" />
