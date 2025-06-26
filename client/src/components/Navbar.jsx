@@ -9,25 +9,25 @@ import { toast } from "sonner";
 const Navbar = () => {
   const navigate = useNavigate();
 
-  const { userData, backendUrl, setUserData, setIsloggedIn } = useContext(AppContext);
+  const { userData, backendUrl, setUserData, setIsloggedIn } =
+    useContext(AppContext);
 
   const sendVerificationOtp = async () => {
     try {
-      axios.defaults.withCredentials = true
+      axios.defaults.withCredentials = true;
 
-      const {data} = axios.post(backendUrl + '/api/auth/send-verify-otp')
+      const { data } = await axios.post(backendUrl + "/api/auth/send-verify-otp");
 
-      if(data.success){
-        navigate("/email-verify")
-        toast.success(data.message)
-      }else{
-        toast.error(data.message)
+      if (data.success) {
+        navigate("/verify-email");
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
       }
-
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
-  }
+  };
 
   const logout = async () => {
     try {
@@ -35,11 +35,11 @@ const Navbar = () => {
 
       const { data } = await axios.post(backendUrl + "/api/auth/logout");
 
-      data.success && setIsloggedIn(false)
-      data.success && setUserData(false)
-      navigate("/")
+      data.success && setIsloggedIn(false);
+      data.success && setUserData(false);
+      navigate("/");
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
   };
 
@@ -67,14 +67,18 @@ const Navbar = () => {
           <div className="absolute hidden group-hover:block top-0 right-0 z-10 rounded pt-10 text-black">
             <ul className="list-none m=0 p-2 bg-gray-100 text-sm">
               {!userData.isAccountVerified && (
-                <li 
-                onClick={sendVerificationOtp}
-                className="py-1 px-2 hover:bg-gray-200 cursor-pointer">
+                <li
+                  onClick={sendVerificationOtp}
+                  className="py-1 px-2 hover:bg-gray-200 cursor-pointer"
+                >
                   Verify email
                 </li>
               )}
 
-              <li onClick={logout} className="py-1 px-2 hover:bg-gray-200 cursor-pointer pr-10">
+              <li
+                onClick={logout}
+                className="py-1 px-2 hover:bg-gray-200 cursor-pointer pr-10"
+              >
                 Logout
               </li>
             </ul>
