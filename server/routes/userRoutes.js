@@ -1,9 +1,17 @@
-import express from "express"
-import userAuth from "../middleware/userAuth.js"
-import { getUserData } from "../controllers/userControllers.js"
+import express from "express";
+import userAuth from "../middleware/userAuth.js";
+import { fileUpload, getUserData } from "../controllers/userControllers.js";
+import { upload } from "../middleware/multer.middleware.js";
 
-const userRouter = express.Router()
+const userRouter = express.Router();
 
-userRouter.get("/data",userAuth,getUserData)
+userRouter.get("/data", userAuth, getUserData);
 
-export default userRouter
+userRouter.post(
+  "/upload",
+  userAuth,
+  upload.fields([{ name: "avatar", maxCount: 5 }]),
+  fileUpload
+);
+
+export default userRouter;

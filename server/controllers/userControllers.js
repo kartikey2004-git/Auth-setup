@@ -1,18 +1,18 @@
 import userModel from "../models/userModel.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
-export const getUserData = async(req,res) => {
+export const getUserData = async (req, res) => {
   try {
+    // first we have to find the user on the basis of userId (userId added by userAuth middleware in req.body)
 
-    // first we have to find the user on the basis of userId (userId added by userAuth middleware in req.body) 
-
-    const { userId } = req.body
+    const { userId } = req.body;
 
     // find the user in database on basis of userId
 
-    const user = await userModel.findById(userId)
+    const user = await userModel.findById(userId);
 
-    if(!user){
-      return res.json({ success: false , message: "User not found"})
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
     }
 
     res.json({
@@ -20,11 +20,51 @@ export const getUserData = async(req,res) => {
 
       userData: {
         name: user.name,
-        isAccountVerified: user.isAccountVerified
-      }
-    })
-
+        isAccountVerified: user.isAccountVerified,
+      },
+    });
   } catch (error) {
-    res.json({success: false , message: error.message})
+    res.json({ success: false, message: error.message });
   }
-}
+};
+
+export const fileUpload = async (req, res) => {
+  try {
+    const files = req.files?.avatar; // avatar is the field name from multer
+
+    if (!files || files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No files provided",
+      });
+    }
+
+    const uploadedUrls = [];
+
+    for (const file of files) {
+      const result = await uploadOnCloudinary(file.path);
+      if (result?.secure_url) {
+        uploadedUrls.push(result.secure_url);
+      }
+    }
+
+    if (uploadedUrls.length === 0) {
+      return res.status(500).json({
+        success: false,
+        message: "Upload to Cloudinary failed for all files",
+      });
+    }
+
+    // Return the secure URL to frontend
+    return res.status(200).json({
+      success: true,
+      message: "Image uploaded successfully",
+      data: uploadedUrls, // array of secure URLs
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong",
+    });
+  }
+};

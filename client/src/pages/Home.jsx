@@ -1,3 +1,4 @@
+import FileUpload from "@/components/FileUpload";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { AppContext } from "@/context/AppContext";
@@ -32,6 +33,8 @@ const Home = () => {
           >
             Get Started
           </Button>
+
+          <FileUpload/>
         </div>
       </section>
     </div>
