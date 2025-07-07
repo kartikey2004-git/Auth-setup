@@ -5,10 +5,8 @@ import EmailVerify from "./pages/EmailVerify";
 import ResetPassword from "./pages/ResetPassword";
 import Auth from "./pages/Login";
 import AppLayout from "./layout/AppLayout";
-
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "./components/ui/sonner";
+import Memories from "./pages/Memories";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +28,10 @@ const router = createBrowserRouter([
         path: "/reset-password",
         element: <ResetPassword />,
       },
+      {
+        path: "/memories",
+        element: <Memories />,
+      },
     ],
   },
 ]);
@@ -39,7 +41,7 @@ const App = () => {
     <>
       <RouterProvider router={router} />
       {/* <ToastContainer position="top-right" autoClose={3000} /> */}
-      <Toaster/>
+      <Toaster />
     </>
   );
 };

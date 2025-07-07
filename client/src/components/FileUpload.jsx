@@ -1,7 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { AppContext } from "@/context/AppContext";
-import { cn } from "@/lib/utils";
 import axios from "axios";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const FileUpload = () => {
@@ -11,10 +11,12 @@ const FileUpload = () => {
   const [imageUrls, setImageUrls] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  //  Handle file selection
   const handleFileChange = (e) => {
     setFiles(e.target.files);
   };
 
+  // Upload files to backend
   const handleUpload = async (e) => {
     e.preventDefault();
 
@@ -34,7 +36,6 @@ const FileUpload = () => {
     }
     try {
       setLoading(true);
-
       axios.defaults.withCredentials = true;
 
       const res = await axios.post(backendUrl + "/api/user/upload", formData, {
@@ -45,7 +46,8 @@ const FileUpload = () => {
 
       if (res.data.success) {
         toast.success("Images uploaded successfully!");
-        setImageUrls(res.data.data); // array of secure_urls
+
+        setImageUrls((prev) => [...res.data.data, ...prev]); // Add new uploads to existing list
       } else {
         toast.error("Upload failed: " + res.data.message);
       }
@@ -57,10 +59,32 @@ const FileUpload = () => {
     }
   };
 
+  // Fetch all images on component mount
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        axios.defaults.withCredentials = true;
+
+        const res = await axios.get(backendUrl + "/api/user/images");
+
+        if (res.data.success) {
+          setImageUrls(res.data.data);
+        } else {
+          toast.error("Failed to load images");
+        }
+      } catch (error) {
+        toast.error("Server error while loading images", error);
+      }
+    };
+
+    fetchImages();
+  }, []);
+
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto p-6 mt-20">
       <form onSubmit={handleUpload} encType="multipart/form-data">
-        <h2 className="text-xl font-bold mb-2">Upload Images (Max 5)</h2>
+        <h2 className="text-2xl font-bold mb-4">Upload Images (Max 5)</h2>
         <input
           type="file"
           name="avatar"
@@ -72,51 +96,36 @@ const FileUpload = () => {
         <button
           type="submit"
           disabled={loading}
-          className="mt-3 bg-blue-600 text-white px-4 py-2 rounded"
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           {loading ? "Uploading..." : "Upload"}
         </button>
       </form>
 
-      {loading && (
-        <div className="mt-4 text-gray-600">⏳ Uploading... Please wait</div>
-      )}
+      {/* Display Images as Cards */}
 
-      {/* Uploaded Image Preview */}
-
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {imageUrls.map((url, index) => (
           <div key={index} className="max-w-xs w-full group/card">
             <div
-              className={cn(
-                "cursor-pointer overflow-hidden relative card h-96 rounded-md shadow-xl max-w-sm mx-auto backgroundImage flex flex-col justify-between p-4",
-                "bg-cover"
-              )}
+              className="cursor-pointer overflow-hidden relative card h-96 rounded-md shadow-xl bg-cover bg-center flex flex-col justify-between p-4"
               style={{ backgroundImage: `url(${url})` }}
             >
               <div className="absolute w-full h-full top-0 left-0 transition duration-300 group-hover/card:bg-black opacity-60"></div>
               <div className="flex flex-row items-center space-x-4 z-10">
-                <img
-                  height="100"
-                  width="100"
-                  alt="Avatar"
-                  src="/manu.png"
-                  className="h-10 w-10 rounded-full border-2 object-cover"
-                />
                 <div className="flex flex-col">
                   <p className="font-normal text-base text-gray-50 relative z-10">
-                    Manu Arora
+                    Billi
                   </p>
-                  <p className="text-sm text-gray-400">2 min read</p>
+                  <p className="text-sm text-gray-400">hu</p>
                 </div>
               </div>
-              <div className="text content">
-                <h1 className="font-bold text-xl md:text-2xl text-gray-50 relative z-10">
-                  Author Card
+              <div className="text content z-10">
+                <h1 className="font-bold text-xl md:text-2xl text-gray-50">
+                  Main Billa hu
                 </h1>
-                <p className="font-normal text-sm text-gray-50 relative z-10 my-4">
-                  Card with Author avatar, complete name and time to read - most
-                  suitable for blogs.
+                <p className="font-normal text-sm text-gray-50 my-4">
+                  meow 🐾
                 </p>
               </div>
             </div>
