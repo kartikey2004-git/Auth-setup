@@ -16,7 +16,9 @@ const Navbar = () => {
     try {
       axios.defaults.withCredentials = true;
 
-      const { data } = await axios.post(backendUrl + "/api/auth/send-verify-otp");
+      const { data } = await axios.post(
+        backendUrl + "/api/auth/send-verify-otp"
+      );
 
       if (data.success) {
         navigate("/verify-email");
@@ -44,19 +46,20 @@ const Navbar = () => {
   };
 
   return (
-    <div className="w-full flex justify-between items-center px-4 py-3 sm:px-24 sm:py-5 fixed top-0 left-0 z-50 bg-background text-foreground shadow-md">
-      {/* Logo Icon */}
+    <nav className="w-full fixed top-0 left-0 z-50 bg-white dark:bg-[#121212] shadow-md px-4 sm:px-8 py-3 flex items-center justify-between">
+      {/* 🏫 Logo + Title */}
+      <div className="flex items-center gap-4">
+        {/* College Logo */}
+        <img
+          src="/abess.png"
+          alt="ABES Logo"
+          className="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-md"
+        />
 
-      <div
-        className="flex items-center gap-2 cursor-pointer"
-        onClick={() => navigate("/")}
-      >
-        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-400 dark:to-blue-600 rounded-md flex items-center justify-center shadow-md">
-          <Shield className="w-20" />
-        </div>
-
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-800 dark:text-white">
-          My<span className="text-blue-600 dark:text-blue-400">Auth</span>
+        {/* Title with Style */}
+        <h1 className="text-lg sm:text-2xl font-extrabold tracking-tight text-indigo-700 dark:text-indigo-400 bg-clip-text">
+          ABESEC —{" "}
+          <span className="text-pink-600 dark:text-pink-400">ECE Memories</span>
         </h1>
       </div>
 
@@ -92,7 +95,7 @@ const Navbar = () => {
           Login <ArrowRight className="w-4 h-4" />
         </Button>
       )}
-    </div>
+    </nav>
   );
 };
 

@@ -3,6 +3,7 @@ import { AppContext } from "@/context/AppContext";
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Carousel } from "./ui/carousel";
 
 const FileUpload = () => {
   const { backendUrl } = useContext(AppContext);
@@ -82,57 +83,69 @@ const FileUpload = () => {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto p-6 mt-20">
-      <form onSubmit={handleUpload} encType="multipart/form-data">
-        <h2 className="text-2xl font-bold mb-4">Upload Images (Max 5)</h2>
-        <input
-          type="file"
-          name="avatar"
-          multiple
-          accept="image/*"
-          onChange={handleFileChange}
-        />
-        <br />
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    <>
+      <div className="max-w-4xl mt-28 mx-auto p-6 bg-white dark:bg-[#1a1a1a] rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
+        <form
+          onSubmit={handleUpload}
+          encType="multipart/form-data"
+          className="flex flex-col gap-6"
         >
-          {loading ? "Uploading..." : "Upload"}
-        </button>
-      </form>
+          {/* 🎓 Heading */}
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-indigo-700 dark:text-indigo-400 mb-2">
+              📸 College Ki Yaadein
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 italic">
+              “Apne woh golden moments yaahan upload karo — ek digital notice
+              board pe!”
+            </p>
+          </div>
 
-      {/* Display Images as Cards */}
+          {/* File Input */}
+          <label className="block">
+            <span className="text-base font-medium text-gray-700 dark:text-gray-200">
+              Upload Images (Max 5)
+            </span>
+            <input
+              type="file"
+              name="avatar"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+              className="mt-2 w-full block text-sm text-gray-500
+        file:mr-4 file:py-2 file:px-4
+        file:rounded-full file:border-0
+        file:text-sm file:font-semibold
+        file:bg-indigo-100 file:text-indigo-700
+        hover:file:bg-indigo-200"
+            />
+          </label>
 
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {imageUrls.map((url, index) => (
-          <div key={index} className="max-w-xs w-full group/card">
-            <div
-              className="cursor-pointer overflow-hidden relative card h-96 rounded-md shadow-xl bg-cover bg-center flex flex-col justify-between p-4"
-              style={{ backgroundImage: `url(${url})` }}
-            >
-              <div className="absolute w-full h-full top-0 left-0 transition duration-300 group-hover/card:bg-black opacity-60"></div>
-              <div className="flex flex-row items-center space-x-4 z-10">
-                <div className="flex flex-col">
-                  <p className="font-normal text-base text-gray-50 relative z-10">
-                    Billi
-                  </p>
-                  <p className="text-sm text-gray-400">hu</p>
-                </div>
-              </div>
-              <div className="text content z-10">
-                <h1 className="font-bold text-xl md:text-2xl text-gray-50">
-                  Main Billa hu
-                </h1>
-                <p className="font-normal text-sm text-gray-50 my-4">
-                  meow 🐾
-                </p>
-              </div>
+          {/* Upload Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-fit self-center bg-gradient-to-r from-indigo-600 to-pink-500 hover:from-indigo-700 hover:to-pink-600 text-white px-6 py-2 rounded-full font-semibold shadow-lg transition"
+          >
+            {loading ? "Uploading..." : "Upload"}
+          </button>
+        </form>
+      </div>
+      <div>
+        {/* Gallery / Carousel */}
+        {imageUrls.length > 0 && (
+          <div className="mt-16 relative overflow-hidden w-full h-full">
+            <h3 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-600 to-pink-600 drop-shadow-sm">
+               Yaadon Ki Gallery
+            </h3>
+
+            <div className="relative overflow-hidden w-full h-full py-20">
+              <Carousel slides={imageUrls.map((url) => ({ src: url }))} />
             </div>
           </div>
-        ))}
+        )}
       </div>
-    </div>
+    </>
   );
 };
 
