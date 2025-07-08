@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AppContext } from "@/context/AppContext";
+import { Sparkles } from "lucide-react";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -122,6 +123,57 @@ const Home = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+      </section>
+
+      <section
+        className="w-full  min-h-[500px] md:min-h-[600px] flex items-center justify-center text-center shadow-lg overflow-hidden relative text-white py-24 px-6 sm:px-10 md:px-20"
+        style={{
+          backgroundImage: `url("blog.jpg")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+        <div className="absolute inset-0 opacity-10 z-0">
+          <img
+            src="/abess.png"
+            alt="ABES Logo"
+            className="w-[1200px] mx-auto object-contain opacity-10"
+          />
+        </div>
+
+        {/* ✨ Foreground Content */}
+        <div className="relative z-10 max-w-5xl mx-auto text-center space-y-8">
+          {/* Sparkles */}
+          <div className="flex justify-center">
+            <Sparkles className="w-10 h-10 text-yellow-400 animate-pulse" />
+          </div>
+
+          {/* 🎓 Heading */}
+          <h2 className="text-4xl md:text-5xl  bg-gradient-to-r from-purple-400 to-purple-600 text-transparent bg-clip-text">
+            🎓 Relive <span className="text-white">Your ABES-ECE Moments</span>
+          </h2>
+
+          {/* 📜 Quote */}
+          <p className="text-lg md:text-xl italic text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            “Woh <span className="text-yellow-300">last-bench</span> ki hasi,
+            assignments ke dinon ki dosti, aur campus ke lamhe — sab yaadein{" "}
+            <span className="text-purple-400">likh daal yahaan!</span>” ☁️
+          </p>
+
+          {/* ✍️ Button */}
+          <button
+            onClick={() => navigate("/blogs")}
+            className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold text-lg px-8 py-3 rounded-full shadow-lg hover:scale-105 transition duration-300"
+          >
+            ✍️ Write Your Memory Now
+          </button>
+
+          <p className="text-sm text-gray-400">
+            Every memory matters — let it live forever 💜
+          </p>
         </div>
       </section>
 

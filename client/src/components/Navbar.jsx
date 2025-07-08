@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Button } from "./ui/button";
-import { ArrowRight, Shield } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "@/context/AppContext";
 import axios from "axios";
@@ -45,10 +45,17 @@ const Navbar = () => {
     }
   };
 
+  const handleClick = () => {
+    navigate("/")
+  }
+
   return (
     <nav className="w-full fixed top-0 left-0 z-50 bg-white dark:bg-[#121212] shadow-md px-4 sm:px-8 py-3 flex items-center justify-between">
-      {/* 🏫 Logo + Title */}
-      <div className="flex items-center gap-4">
+      
+
+      <div 
+      onClick={handleClick}
+      className="flex items-center gap-4 cursor-pointer">
         {/* College Logo */}
         <img
           src="/abess.png"

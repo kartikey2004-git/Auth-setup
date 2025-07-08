@@ -1,6 +1,7 @@
 import { Image } from "../models/imageMemoryModel.js";
 import userModel from "../models/userModel.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import Memory from "../models/memoryDataModels.js";
 
 export const getUserData = async (req, res) => {
   try {
@@ -92,3 +93,25 @@ export const getAllImages = async (req, res) => {
     });
   }
 };
+
+
+export const createMemory = async (req, res) => {
+  try {
+    const { title, description, funnyIncident } = req.body;
+    const memory = await Memory.create({ title, description, funnyIncident });
+    res.status(201).json({ success: true, data: memory });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export const getMemories = async (req, res) => {
+  try {
+    const memories = await Memory.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: memories });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+

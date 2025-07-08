@@ -7,6 +7,7 @@ import Auth from "./pages/Login";
 import AppLayout from "./layout/AppLayout";
 import { Toaster } from "./components/ui/sonner";
 import Memories from "./pages/Memories";
+import Blogs from "./pages/Blogs";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "/memories",
         element: <Memories />,
+      },
+      {
+        path: "/blogs",
+        element: <Blogs />,
       },
     ],
   },

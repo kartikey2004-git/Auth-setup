@@ -5,7 +5,6 @@ import { FiArrowRight } from "react-icons/fi";
 
 const Slide = ({ slide, index, current, handleSlideClick }) => {
   const slideRef = useRef(null);
-
   const xRef = useRef(0);
   const yRef = useRef(0);
   const frameRef = useRef();
@@ -13,7 +12,6 @@ const Slide = ({ slide, index, current, handleSlideClick }) => {
   useEffect(() => {
     const animate = () => {
       if (!slideRef.current) return;
-
       const x = xRef.current;
       const y = yRef.current;
 
@@ -26,16 +24,13 @@ const Slide = ({ slide, index, current, handleSlideClick }) => {
     frameRef.current = requestAnimationFrame(animate);
 
     return () => {
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current);
-      }
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
   }, []);
 
   const handleMouseMove = (event) => {
     const el = slideRef.current;
     if (!el) return;
-
     const r = el.getBoundingClientRect();
     xRef.current = event.clientX - (r.left + Math.floor(r.width / 2));
     yRef.current = event.clientY - (r.top + Math.floor(r.height / 2));
@@ -99,14 +94,9 @@ const Slide = ({ slide, index, current, handleSlideClick }) => {
             current === index ? "opacity-100 visible" : "opacity-0 invisible"
           }`}
         >
-          <h2 className="text-lg md:text-2xl lg:text-4xl font-semibold  relative">
+          <h2 className="text-lg md:text-2xl lg:text-4xl font-semibold relative">
             {title}
           </h2>
-          {/* <div className="flex justify-center">
-            <button className="mt-6  px-4 py-2 w-fit mx-auto sm:text-sm text-black bg-white h-12 border border-transparent text-xs flex justify-center items-center rounded-2xl hover:shadow-lg transition duration-200 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              {button}
-            </button>
-          </div> */}
         </article>
       </li>
     </div>
@@ -129,6 +119,9 @@ const CarouselControl = ({ type, title, handleClick }) => {
 
 export function Carousel({ slides }) {
   const [current, setCurrent] = useState(0);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const id = useId();
 
   const handlePreviousClick = () => {
     const previous = current - 1;
@@ -146,7 +139,25 @@ export function Carousel({ slides }) {
     }
   };
 
-  const id = useId();
+  // 👇 Touch Swipe Handlers
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const distance = touchStartX.current - touchEndX.current;
+
+    // Threshold
+    if (distance > 50) {
+      handleNextClick(); // swipe left
+    } else if (distance < -50) {
+      handlePreviousClick(); // swipe right
+    }
+  };
 
   return (
     <div
@@ -158,6 +169,9 @@ export function Carousel({ slides }) {
         style={{
           transform: `translateX(-${current * (100 / slides.length)}%)`,
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {slides.map((slide, index) => (
           <Slide
@@ -169,13 +183,13 @@ export function Carousel({ slides }) {
           />
         ))}
       </ul>
+
       <div className="absolute flex justify-center w-full top-[calc(100%+1rem)]">
         <CarouselControl
           type="previous"
           title="Go to previous slide"
           handleClick={handlePreviousClick}
         />
-
         <CarouselControl
           type="next"
           title="Go to next slide"

@@ -1,6 +1,6 @@
 import express from "express";
 import userAuth from "../middleware/userAuth.js";
-import { fileUpload, getAllImages, getUserData } from "../controllers/userControllers.js";
+import { createMemory, fileUpload, getAllImages, getMemories, getUserData } from "../controllers/userControllers.js";
 import { upload } from "../middleware/multer.middleware.js";
 
 const userRouter = express.Router();
@@ -15,5 +15,9 @@ userRouter.post(
 );
 
 userRouter.get("/images",userAuth,getAllImages)
+
+
+userRouter.post("/createBlog",userAuth,createMemory)
+userRouter.get("/getBlogs",userAuth,getMemories)
 
 export default userRouter;
