@@ -29,12 +29,12 @@ client se aane wale cookies ko parse karne ka kaam karti hai, taaki tum unhe req
 */
 
 const allowedOrigins = [
-  "http://localhost:5173",                     
-  "https://abesec-memories.vercel.app"          
+  "http://localhost:5173",
+  "https://abesec-memories.vercel.app",
+  "https://auth-setup-8vqv.vercel.app/",
 ];
 
-
-app.use(cors({ origin: allowedOrigins ,credentials: true})); // so that we can send cookies in response
+app.use(cors({ origin: allowedOrigins, credentials: true })); // so that we can send cookies in response
 
 // API endpoints
 app.get("/", (req, res) => {
