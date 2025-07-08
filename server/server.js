@@ -28,7 +28,10 @@ client se aane wale cookies ko parse karne ka kaam karti hai, taaki tum unhe req
 
 */
 
-const allowedOrigins = ['http://localhost:5173']
+const allowedOrigins = [
+  "http://localhost:5173",                     
+  "https://abesec-memories.vercel.app"          
+];
 
 
 app.use(cors({ origin: allowedOrigins ,credentials: true})); // so that we can send cookies in response
