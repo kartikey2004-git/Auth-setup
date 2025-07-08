@@ -11,15 +11,13 @@ import { toast } from "sonner";
 const ResetPassword = () => {
   const navigate = useNavigate();
   const { backendUrl } = useContext(AppContext);
-  axios.defaults.withCredentials = true;
 
-  const [showNewPassword, setShowNewPassword] = useState(false);
-
-  const [email, setEmail] = useState();
-  const [newPassword, setNewPassword] = useState();
-  const [isEmailSent, setIsEmailSent] = useState("");
-  const [otp, setOtp] = useState(0);
+  const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [isEmailSent, setIsEmailSent] = useState(false);
   const [isOtpSubmitted, setIsOtpSubmitted] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const inputRef = useRef([]);
 
@@ -36,11 +34,16 @@ const ResetPassword = () => {
   };
 
   const handlePaste = (e) => {
-    const paste = e.clipboardData.getData("text");
-    const pasteArray = paste.split("");
-    pasteArray.forEach((char, index) => {
+    e.preventDefault();
+    const paste = e.clipboardData
+      .getData("text")
+      .slice(0, inputRef.current.length);
+    paste.split("").forEach((char, index) => {
       if (inputRef.current[index]) {
         inputRef.current[index].value = char;
+        if (index < inputRef.current.length - 1) {
+          inputRef.current[index + 1].focus();
+        }
       }
     });
   };
@@ -49,23 +52,27 @@ const ResetPassword = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        backendUrl + "/api/auth/send-reset-otp",
-        { email }
+        `${backendUrl}/api/auth/send-reset-otp`,
+        { email },
+        { withCredentials: true }
       );
 
-      data.success ? toast.success(data.message) : toast.error(data.message);
-
-      data.success && setIsEmailSent(true);
+      if (data.success) {
+        toast.success(data.message);
+        setIsEmailSent(true);
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error?.response?.data?.message || error.message);
     }
   };
 
   const onSubmitOTP = async (e) => {
     e.preventDefault();
-    const otpArray = inputRef.current.map((e) => e.value);
-
-    setOtp(otpArray.join(""));
+    const otpArray = inputRef.current.map((input) => input.value);
+    const otpValue = otpArray.join("");
+    setOtp(otpValue);
     setIsOtpSubmitted(true);
   };
 
@@ -73,15 +80,19 @@ const ResetPassword = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        backendUrl + "/api/auth/reset-password",
-        { email, otp, newPassword }
+        `${backendUrl}/api/auth/reset-password`,
+        { email, otp, newPassword },
+        { withCredentials: true }
       );
 
-      data.success ? toast.success(data.message) : toast.error(data.message);
-
-      data.success && navigate("/login");
+      if (data.success) {
+        toast.success(data.message);
+        navigate("/login");
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error?.response?.data?.message || error.message);
     }
   };
 
@@ -171,7 +182,7 @@ const ResetPassword = () => {
             <LockIcon className="h-5 w-5" />
             <div className="relative">
               <Input
-                 type={showNewPassword ? "text" : "password"}
+                type={showNewPassword ? "text" : "password"}
                 placeholder="Password"
                 className="bg-transparent text-white placeholder-gray-300 pr-24 dark:placeholder-gray-400 outline-none border-none"
                 value={newPassword}

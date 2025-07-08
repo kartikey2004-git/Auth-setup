@@ -12,12 +12,16 @@ const Navbar = () => {
   const { userData, backendUrl, setUserData, setIsloggedIn } =
     useContext(AppContext);
 
+  const handleError = (error) => {
+    toast.error(error?.response?.data?.message || error.message);
+  };
+
   const sendVerificationOtp = async () => {
     try {
       axios.defaults.withCredentials = true;
 
       const { data } = await axios.post(
-        backendUrl + "/api/auth/send-verify-otp"
+        `${backendUrl}/api/auth/send-verify-otp`
       );
 
       if (data.success) {
@@ -27,7 +31,7 @@ const Navbar = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      handleError(error);
     }
   };
 
@@ -35,27 +39,30 @@ const Navbar = () => {
     try {
       axios.defaults.withCredentials = true;
 
-      const { data } = await axios.post(backendUrl + "/api/auth/logout");
+      const { data } = await axios.post(`${backendUrl}/api/auth/logout`);
 
-      data.success && setIsloggedIn(false);
-      data.success && setUserData(false);
-      navigate("/");
+      if (data.success) {
+        setIsloggedIn(false);
+        setUserData(null); // changed from false
+        navigate("/");
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-      toast.error(error.message);
+      handleError(error);
     }
   };
 
   const handleClick = () => {
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   return (
     <nav className="w-full fixed top-0 left-0 z-50 bg-white dark:bg-[#121212] shadow-md px-4 sm:px-8 py-3 flex items-center justify-between">
-      
-
-      <div 
-      onClick={handleClick}
-      className="flex items-center gap-4 cursor-pointer">
+      <div
+        onClick={handleClick}
+        className="flex items-center gap-4 cursor-pointer"
+      >
         {/* College Logo */}
         <img
           src="/abess.png"
@@ -64,7 +71,7 @@ const Navbar = () => {
         />
 
         {/* Title with Style */}
-        <h1 className="text-lg sm:text-2xl font-extrabold tracking-tight text-indigo-700 dark:text-indigo-400 bg-clip-text">
+        <h1 className="text-lg sm:text-2xl  tracking-tight text-indigo-700 dark:text-indigo-400 bg-clip-text">
           ABESEC —{" "}
           <span className="text-pink-600 dark:text-pink-400">ECE Memories</span>
         </h1>

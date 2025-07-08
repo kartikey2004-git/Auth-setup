@@ -8,12 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const EmailVerify = () => {
+  axios.defaults.withCredentials = true;
 
-  axios.defaults.withCredentials = true
+  const { backendUrl, isLoggedIn, userData, getUserData } =
+    useContext(AppContext);
 
-  const { backendUrl, isLoggedIn , userData , getUserData } = useContext(AppContext);
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const inputRef = useRef([]);
 
@@ -30,11 +30,16 @@ const EmailVerify = () => {
   };
 
   const handlePaste = (e) => {
-    const paste = e.clipboardData.getData("text");
-    const pasteArray = paste.split("");
-    pasteArray.forEach((char, index) => {
+    e.preventDefault();
+    const paste = e.clipboardData
+      .getData("text")
+      .slice(0, inputRef.current.length);
+    paste.split("").forEach((char, index) => {
       if (inputRef.current[index]) {
         inputRef.current[index].value = char;
+        if (index < inputRef.current.length - 1) {
+          inputRef.current[index + 1].focus();
+        }
       }
     });
   };
@@ -45,30 +50,36 @@ const EmailVerify = () => {
       const otpArray = inputRef.current.map((e) => e.value);
       const otp = otpArray.join("");
 
-      const { data } = await axios.post(backendUrl + '/api/auth/verify-account',{otp});
+      const { data } = await axios.post(
+        `${backendUrl}/api/auth/verify-account`,
+        { otp },
+        { withCredentials: true }
+      );
 
-      if(data.success){
-        toast.success(data.message)
-        getUserData()
-        navigate("/")
-      }else{
-        toast.error(data.message)
+      if (data.success) {
+        toast.success(data.message);
+        getUserData();
+        navigate("/");
+      } else {
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error?.response?.data?.message || error.message);
     }
   };
 
   useEffect(() => {
-    isLoggedIn && userData && userData.isAccountVerified && navigate("/")
-  },[isLoggedIn,userData])
-
+    if (isLoggedIn && userData?.isAccountVerified) {
+      navigate("/");
+    }
+  }, [isLoggedIn, userData, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen  bg-background text-foreground">
-      <form 
-      onSubmit={onSubmitHandler}
-      className="bg-white p-8 rounded-lg shadow-lg w-96 text-sm">
+      <form
+        onSubmit={onSubmitHandler}
+        className="bg-white p-8 rounded-lg shadow-lg w-96 text-sm"
+      >
         <h1 className="text-2xl text-black font-semibold text-center mb-4">
           Email Verify OTP
         </h1>

@@ -21,7 +21,6 @@ import { toast } from "sonner";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Auth = () => {
-  
   const navigate = useNavigate();
   const { backendUrl, setIsloggedIn, getUserData } = useContext(AppContext);
 
@@ -46,7 +45,12 @@ const Auth = () => {
 
   const handleSubmit = async (tab) => {
     const { name, email, password } = form[tab];
-    axios.defaults.withCredentials = true;
+
+    if (!email || !password || (tab === "register" && !name)) {
+      toast.error("Please fill all required fields.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -56,7 +60,10 @@ const Auth = () => {
       const payload =
         tab === "register" ? { name, email, password } : { email, password };
 
-      const response = await axios.post(`${backendUrl}${endpoint}`, payload);
+      const response = await axios.post(`${backendUrl}${endpoint}`, payload, {
+        withCredentials: true,
+      });
+
       const data = response?.data;
 
       if (data?.success) {
@@ -73,7 +80,7 @@ const Auth = () => {
         error.message ||
         "Something went wrong";
       toast.error(msg);
-      console.error("Auth Error:", msg);
+      console.error("Auth Error:", msg, error);
     } finally {
       setLoading(false);
     }
@@ -137,9 +144,7 @@ const Auth = () => {
                     />
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowLoginPassword((prev) => !prev)
-                      }
+                      onClick={() => setShowLoginPassword((prev) => !prev)}
                       className="absolute right-3 inset-y-0 my-auto text-muted-foreground focus:outline-none"
                     >
                       {showLoginPassword ? (
@@ -242,9 +247,7 @@ const Auth = () => {
                     />
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowSignupPassword((prev) => !prev)
-                      }
+                      onClick={() => setShowSignupPassword((prev) => !prev)}
                       className="absolute right-3 inset-y-0 my-auto text-muted-foreground focus:outline-none"
                     >
                       {showSignupPassword ? (

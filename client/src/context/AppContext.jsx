@@ -2,67 +2,74 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import axios from "axios";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 
-export const AppContext = createContext()
-
+export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
+  axios.defaults.withCredentials = true;
 
-  // now we can declare any function here and pass into the value object and we can also pass the state variables
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  axios.defaults.withCredentials = true
+  const [isLoggedIn, setIsloggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
-  const [isLoggedIn,setIsloggedIn] = useState(false)
-  const [userData,setUserData] = useState(false)
+  const handleError = (error) => {
+    toast.error(error?.response?.data?.message || error.message);
+  };
 
+  //  Get current auth state (checks JWT token cookie validity)
 
-  const getAuthState = async () => {
+  const getAuthState = useCallback(async () => {
     try {
-      const { data } = await axios.get(backendUrl + '/api/auth/is-auth')
+      const { data } = await axios.get(`${backendUrl}/api/auth/is-auth`);
 
-      if(data.success){
-        setIsloggedIn(true)
-        getUserData()
+      if (data.success) {
+        setIsloggedIn(true);
+        getUserData();
+      } else {
+        setIsloggedIn(false);
       }
     } catch (error) {
-      toast.error(error.message)
+      handleError(error);
+      setIsloggedIn(false);
     }
-  }
+  }, [backendUrl]);
 
-  const getUserData = async () => {
+  //  Get user data from backend if logged in
+  const getUserData = useCallback(async () => {
     try {
-      const {data} = await axios.get(backendUrl + '/api/user/data')
-      data.success ? setUserData(data.userData) : toast.error(data.message)
+      const { data } = await axios.get(`${backendUrl}/api/user/data`);
+
+      if (data.success) {
+        setUserData(data.userData);
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-      toast.error(error.message)
+      handleError(error);
     }
-  }
+  }, [backendUrl]);
 
   useEffect(() => {
-    getAuthState()
-  },[])
+    getAuthState();
+  }, [getAuthState]);
 
   const value = {
     backendUrl,
-    isLoggedIn,setIsloggedIn,
-    userData,setUserData,getUserData
-  }
+    isLoggedIn,
+    setIsloggedIn,
+    userData,
+    setUserData,
+    getUserData,
+  };
 
   return (
-    <AppContext.Provider value={value}>
-      {props.children}
-    </AppContext.Provider>
-  )
-}
+    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+  );
+};
 
-
-// in the context folder , a context file that stores all the states and function 
+// in the context folder , a context file that stores all the states and function
 
 // in this value object we can pass any state variables and functions , so that we that we can access them throughout our app
-
-
-
-

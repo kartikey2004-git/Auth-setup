@@ -14,14 +14,14 @@ const FileUpload = () => {
 
   //  Handle file selection
   const handleFileChange = (e) => {
-    setFiles(e.target.files);
+    setFiles(Array.from(e.target.files));
   };
 
   // Upload files to backend
   const handleUpload = async (e) => {
     e.preventDefault();
 
-    if (files.length === 0) {
+    if (!files.length) {
       toast.error("Please select at least one file.");
       return;
     }
@@ -33,13 +33,14 @@ const FileUpload = () => {
 
     const formData = new FormData();
     for (let i = 0; i < files.length && i < 5; i++) {
-      formData.append("avatar", files[i]); // 'avatar' must match multer field name
+      formData.append("avatar", files[i]); // field name must match multer
     }
+
     try {
       setLoading(true);
-      axios.defaults.withCredentials = true;
 
-      const res = await axios.post(backendUrl + "/api/user/upload", formData, {
+      const res = await axios.post(`${backendUrl}/api/user/upload`, formData, {
+        withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -47,8 +48,8 @@ const FileUpload = () => {
 
       if (res.data.success) {
         toast.success("Images uploaded successfully!");
-
-        setImageUrls((prev) => [...res.data.data, ...prev]); // Add new uploads to existing list
+        setImageUrls((prev) => [...(res.data.data || []), ...prev]);
+        setFiles([]);
       } else {
         toast.error("Upload failed: " + res.data.message);
       }
@@ -65,22 +66,22 @@ const FileUpload = () => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        axios.defaults.withCredentials = true;
-
-        const res = await axios.get(backendUrl + "/api/user/images");
+        const res = await axios.get(`${backendUrl}/api/user/images`, {
+          withCredentials: true,
+        });
 
         if (res.data.success) {
-          setImageUrls(res.data.data);
+          setImageUrls(res.data.data || []);
         } else {
           toast.error("Failed to load images");
         }
       } catch (error) {
-        toast.error("Server error while loading images", error);
+        toast.error("Server error while loading images: " + error?.message);
       }
     };
 
     fetchImages();
-  }, []);
+  }, [backendUrl]);
 
   return (
     <>
@@ -136,7 +137,7 @@ const FileUpload = () => {
         {imageUrls.length > 0 && (
           <div className="mt-16 relative overflow-hidden w-full h-full">
             <h3 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-600 to-pink-600 drop-shadow-sm">
-               Yaadon Ki Gallery
+              Yaadon Ki Gallery
             </h3>
 
             <div className="relative overflow-hidden w-full h-full py-20">
