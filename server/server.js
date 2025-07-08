@@ -28,12 +28,29 @@ client se aane wale cookies ko parse karne ka kaam karti hai, taaki tum unhe req
 
 */
 
+
+// Allowed frontend domains
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://abesec-memories.vercel.app",
 ];
 
-app.use(cors({ origin: allowedOrigins, credentials: true })); // so that we can send cookies in response
+
+// Dynamic CORS configuration
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // API endpoints
 app.get("/", (req, res) => {
