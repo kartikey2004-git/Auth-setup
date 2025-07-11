@@ -1,39 +1,47 @@
-// authentication routes
-
 import express from "express";
-import { isAuthenticated, login, logout, register, resetPassword, sendResetOtp, sendVerifyOtp, verifyEmail } from "../controllers/authController.js";
+import {
+  isAuthenticated,
+  login,
+  logout,
+  register,
+  resetPassword,
+  sendResetOtp,
+  sendVerifyOtp,
+  verifyEmail,
+} from "../controllers/authController.js";
 import userAuth from "../middleware/userAuth.js";
 
 const authRouter = express.Router();
-
-// POST ---> Server pe naya resource create karna.  Example: New user, product, ya category add karna.
-
-// jaise hi hum ye endpoint hit krenge /register toh register controller execute hojayega
 
 authRouter.post("/register", register);
 authRouter.post("/login", login);
 authRouter.post("/logout", logout);
 
-authRouter.post("/send-verify-otp",userAuth,sendVerifyOtp)
+authRouter.post("/send-verify-otp", userAuth, sendVerifyOtp);
 
-authRouter.post("/verify-account", userAuth , verifyEmail)
+authRouter.post("/verify-account", userAuth, verifyEmail);
 
+authRouter.get("/is-auth", userAuth, isAuthenticated);
 
-// API to check user is loggedIn or not 
-authRouter.get('/is-auth',userAuth,isAuthenticated)
+authRouter.post("/send-reset-otp", sendResetOtp);
 
-
-// API to send password reset OTP and API to reset password using otp 
-
-authRouter.post("/send-reset-otp",sendResetOtp)
-
-authRouter.post("/reset-password",resetPassword)
-
-
-
-
+authRouter.post("/reset-password", resetPassword);
 
 export default authRouter;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // now we have to implement mail functionality , whenever a new account is created , user will recieve a welcome email
 
@@ -75,5 +83,12 @@ SMTP ka full form hai Simple Mail Transfer Protocol. Yeh ek standard protocol ha
           - TLS/SSL encryption
 */
 
-
 // To send email , we need to create SMTP account from where we get host, port , and authentication details  and with the help of transporter we send the mail to client
+
+// POST ---> Server pe naya resource create karna.  Example: New user, product, ya category add karna.
+
+// jaise hi hum ye endpoint hit krenge /register toh register controller execute hojayega
+
+// API to check user is loggedIn or not
+
+// API to send password reset OTP and API to reset password using otp

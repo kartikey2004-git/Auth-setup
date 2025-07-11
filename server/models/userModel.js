@@ -1,39 +1,82 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    verifyOtp: {
+      type: String,
+      default: "",
+      select: false,
+    },
+    verifyOtpExpireAt: {
+      type: Date,
+      default: null,
+    },
+    isAccountVerified: {
+      type: Boolean,
+      default: false,
+    },
+    resetOtp: {
+      type: String,
+      default: "",
+      select: false,
+    },
+    resetOtpExpireAt: {
+      type: Date,
+      default: null,
+    },
+    twoFactorOtp: {
+      type: String,
+      default: "",
+      select: false,
+    },
+    twoFactorOtpExpiresAt: {
+      type: Date,
+      default: null,
+    },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
 
-  name: { type: String, required: true },
-  email: {type: String, required: true, unique: true },
-  password: {type: String, required: true},
+export const User = mongoose.models.user || mongoose.model("user", userSchema);
 
 
-  verifyOtp: {type: String, default: ""}, // email verification OTP : when user created default value : ""
 
 
-  // expired time of verification OTP
-  verifyOtpExpireAt: {type: Number, default: 0},
 
 
-  // to check user is verified or not 
-
-  isAccountVerified : {type: Boolean,default: false}, // when new user created and stored in database by default , it's unverified
 
 
-  // OTP used to reset the password , it's expiryTime
-
-  resetOtp: {type: String,default: ""},
-  resetOtpExpireAt: {type: Number,default: 0}
-},{timestamps: true});
 
 
-const userModel =  mongoose.models.user || mongoose.model("user", userSchema); // avoid creating mongoose models , if user model already exist 
 
 
-export default userModel
+
+
+
+
+
+
 
 
 // Now we can use this user model to store data of user in mongoDB database
-
 
 /* 
 
@@ -63,7 +106,16 @@ createdAt , updatedAt
 
 */
 
-
 // Now ,To create a new user : we need to create user controller function , using it we will create the API endpoint
 
+// email verification OTP : when user created default value : ""
 
+// expired time of verification OTP
+
+// to check user is verified or not
+
+// when new user created and stored in database by default , it's unverified
+
+// OTP used to reset the password , it's expiryTime
+
+// avoid creating mongoose models , if user model already exist

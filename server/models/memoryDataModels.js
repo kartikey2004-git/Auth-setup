@@ -1,12 +1,28 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const memorySchema = new mongoose.Schema(
+const memorySchema = new Schema(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    funnyIncident: { type: String, required: true },
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    funnyIncident: {
+      type: String,
+      required: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Memory", memorySchema);
+export const Memory = mongoose.models.memory || mongoose.model("memory", memorySchema);
+
+
