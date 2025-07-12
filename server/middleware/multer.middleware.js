@@ -1,59 +1,27 @@
 import multer from "multer";
-import path from "path";
-import fs from "fs";
-
-const tempDir = "./public/temp";
-if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir, { recursive: true });
-}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, tempDir);
+    cb(null, "./public/temp");
   },
+
   filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
-    const baseName = path.basename(file.originalname, ext);
-    const uniqueName = `${baseName}-${Date.now()}${ext}`;
-    cb(null, uniqueName);
+    console.log(file);
+    cb(null, file.originalname);
+
+    // but ye achi practice nhi hai kyuki same name ki kayi files aajayein toh wo overwrite ho jayengi
+
+    // but operation is for tiny amount of time on server pe , thodi der ke liye rhegi wo file and then phir hum usko cloudinary pe upload krdenge
+
+    // we can minor functionality later
+
+    // cb se humein return mein filename meil jayega , toh localpath wali kahani humari yaha se solve hojati hai , localpath humare pass aa jayega
   },
 });
-
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only JPEG, PNG, and WEBP images are allowed"), false);
-  }
-};
-
-const limits = {
-  fileSize: 5 * 1024 * 1024, // 5 MB
-};
 
 export const upload = multer({
   storage,
-  fileFilter,
-  limits
 });
-
-
-
-
-
-
-
-
-
-
-// but ye achi practice nhi hai kyuki same name ki kayi files aajayein toh wo overwrite ho jayengi
-
-// but operation is for tiny amount of time on server pe , thodi der ke liye rhegi wo file and then phir hum usko cloudinary pe upload krdenge
-
-// we can minor functionality later
-
-// cb se humein return mein filename meil jayega , toh localpath wali kahani humari yaha se solve hojati hai , localpath humare pass aa jayega
 
 // cb parameters padh skte h , agar humein filename change krna hai unique rkhna hai
 

@@ -1,4 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import crypto from "crypto";  
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const userSchema = new Schema(
   {
@@ -15,6 +18,7 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
+      select: false,
     },
     verifyOtp: {
       type: String,
@@ -31,6 +35,7 @@ const userSchema = new Schema(
     },
     resetOtp: {
       type: String,
+      maxlength: 6,
       default: "",
       select: false,
     },
@@ -40,6 +45,7 @@ const userSchema = new Schema(
     },
     twoFactorOtp: {
       type: String,
+      maxlength: 6,
       default: "",
       select: false,
     },
@@ -51,31 +57,60 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    refreshTokens: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );
 
-export const User = mongoose.models.user || mongoose.model("user", userSchema);
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
+});
+
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "15m",
+    }
+  );
+};
+
+userSchema.methods.generateRefreshToken = function () {
+   const refreshToken = jwt.sign(
+    {
+      _id: this._id,
+      tokenId: crypto.randomUUID(),
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "7d",
+    }
+  )
+
+  this.refreshTokens.push(refreshToken);
+  
+
+   return refreshToken;
+};
+
+export const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
 // Now we can use this user model to store data of user in mongoDB database
 
 /* 
@@ -104,7 +139,7 @@ Writing MongoDB validation, casting and business logic boilerplate is a drag
 timestamps : true provides us two fields
 createdAt , updatedAt
 
-*/
+
 
 // Now ,To create a new user : we need to create user controller function , using it we will create the API endpoint
 
@@ -119,3 +154,6 @@ createdAt , updatedAt
 // OTP used to reset the password , it's expiryTime
 
 // avoid creating mongoose models , if user model already exist
+
+
+*/
