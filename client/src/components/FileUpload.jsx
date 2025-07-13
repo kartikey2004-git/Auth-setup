@@ -85,67 +85,72 @@ const FileUpload = () => {
 
   return (
     <>
-      <div className="max-w-4xl mt-28 mx-auto p-6 bg-white dark:bg-[#1a1a1a] rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
-        <form
-          onSubmit={handleUpload}
-          encType="multipart/form-data"
-          className="flex flex-col gap-6"
-        >
-          {/* 🎓 Heading */}
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-indigo-700 dark:text-indigo-400 mb-2">
+      <section className="min-h-screen flex flex-col md:flex-row bg-[#0d0d10] text-white  mt-16 relative overflow-hidden">
+        <div className="w-full md:w-[420px] p-8 rounded-2xl bg-[#0f0f11]/90 border border-red-500/30 shadow-2xl backdrop-blur-sm">
+          <header className="text-center mb-8">
+            <h2 className="text-3xl sm:text-4xl font-semibold text-red-500 mb-3 drop-shadow">
               📸 College Ki Yaadein
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 italic">
-              “Apne woh golden moments yaahan upload karo — ek digital notice
-              board pe!”
+            <p className="text-gray-400 italic text-sm">
+              “Apne golden moments yaahan upload karo — ek digital notice‑board
+              pe!”
             </p>
-          </div>
+          </header>
 
-          {/* File Input */}
-          <label className="block">
-            <span className="text-base font-medium text-gray-700 dark:text-gray-200">
-              Upload Images (Max 5)
-            </span>
-            <input
-              type="file"
-              name="avatar"
-              multiple
-              accept="image/*"
-              onChange={handleFileChange}
-              className="mt-2 w-full block text-sm text-gray-500
-        file:mr-4 file:py-2 file:px-4
-        file:rounded-full file:border-0
-        file:text-sm file:font-semibold
-        file:bg-indigo-100 file:text-indigo-700
-        hover:file:bg-indigo-200"
-            />
-          </label>
-
-          {/* Upload Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-fit self-center bg-gradient-to-r from-indigo-600 to-pink-500 hover:from-indigo-700 hover:to-pink-600 text-white px-6 py-2 rounded-full font-semibold shadow-lg transition"
+          <form
+            onSubmit={handleUpload}
+            encType="multipart/form-data"
+            className="space-y-8"
           >
-            {loading ? "Uploading..." : "Upload"}
-          </button>
-        </form>
-      </div>
-      <div>
-        {/* Gallery / Carousel */}
-        {imageUrls.length > 0 && (
-          <div className="mt-16 relative overflow-hidden w-full h-full">
-            <h3 className="text-3xl sm:text-4xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-600 to-pink-600 drop-shadow-sm">
-              Yaadon Ki Gallery
-            </h3>
+            {/* drag‑and‑drop zone */}
+            <label
+              htmlFor="imageUpload"
+              className="flex flex-col items-center justify-center border-2 border-dashed border-red-500/40 rounded-xl p-8 cursor-pointer hover:border-blue-500/60 transition"
+            >
+              <span className="text-gray-300 text-center text-sm">
+                Drag or click to upload (max 5 images)
+              </span>
+              <input
+                id="imageUpload"
+                type="file"
+                name="images"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </label>
 
-            <div className="relative overflow-hidden w-full h-full py-20">
-              <Carousel slides={imageUrls.map((url) => ({ src: url }))} />
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="mx-auto block w-40 py-3 rounded-full font-semibold bg-red-600 hover:bg-blue-600 transition-colors shadow-lg"
+            >
+              {loading ? "Uploading…" : "Upload"}
+            </button>
+          </form>
+        </div>
+
+        {/* 🕸  Bottom‑right Spidey (hidden on small screens) */}
+        <img
+          src="/spidy.png"
+          alt="Spidey pose"
+          className="hidden md:block absolute bottom-0 right-0 w-[280px] md:w-[340px] lg:w-[380px] object-contain drop-shadow-[0_10px_20px_rgba(255,0,0,0.5)] pointer-events-none select-none"
+        />
+      </section>
+
+      {/* ——  Gallery  —— */}
+      {imageUrls.length > 0 && (
+        <section className="mt-24 px-6">
+          <h3 className="text-3xl sm:text-4xl font-extrabold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-pink-500 to-blue-500 drop-shadow-lg">
+            Yaadon Ki Gallery
+          </h3>
+
+          <div className="relative max-w-6xl mx-auto">
+            <Carousel slides={imageUrls.map((src) => ({ src }))} />
           </div>
-        )}
-      </div>
+        </section>
+      )}
     </>
   );
 };

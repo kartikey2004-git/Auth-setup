@@ -58,57 +58,81 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full fixed top-0 left-0 z-50 bg-white dark:bg-[#121212] shadow-md px-4 sm:px-8 py-3 flex items-center justify-between">
+    <nav className="w-full fixed top-0 left-0 z-50 px-4 sm:px-8 py-3 flex items-center justify-between bg-[#0c0c0d] shadow-lg backdrop-blur-lg border-b border-red-500/20">
+      {/* 🕸️ Subtle Web Pattern Overlay */}
+      <svg
+        className="absolute inset-0 w-full h-full opacity-5 pointer-events-none"
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <pattern
+            id="web"
+            width="80"
+            height="80"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M0 0 L80 80 M80 0 L0 80 M40 0 L40 80 M0 40 L80 40"
+              stroke="#f87171"
+              strokeWidth="0.3"
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#web)" />
+      </svg>
+
+      {/* 🔥 Logo & Title */}
       <div
         onClick={handleClick}
-        className="flex items-center gap-4 cursor-pointer"
+        className="flex items-center gap-4 z-10 cursor-pointer"
       >
-        {/* College Logo */}
         <img
           src="/abess.png"
           alt="ABES Logo"
           className="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-md"
         />
-
-        {/* Title with Style */}
-        <h1 className="text-lg sm:text-2xl  tracking-tight text-indigo-700 dark:text-indigo-400 bg-clip-text">
-          ABESEC —{" "}
-          <span className="text-pink-600 dark:text-pink-400">ECE Memories</span>
+        <h1 className="text-lg sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-red-500 via-pink-500 to-blue-500 text-transparent bg-clip-text drop-shadow">
+          ABESEC <span className="opacity-80">— ECE Memories</span>
         </h1>
       </div>
 
-      {userData ? (
-        <div className="w-8 h-8 flex justify-center items-center rounded-full bg-black text-white relative group">
-          {userData.name[0].toUpperCase()}
+      {/* 🧑‍💻 Right Side Auth */}
+      <div className="z-10">
+        {userData ? (
+          <div className="relative group">
+            <div className="w-9 h-9 flex items-center justify-center rounded-full bg-red-600 text-white font-semibold cursor-pointer hover:scale-105 transition">
+              {userData.name[0].toUpperCase()}
+            </div>
 
-          <div className="absolute hidden group-hover:block top-0 right-0 z-10 rounded pt-10 text-black">
-            <ul className="list-none m=0 p-2 bg-gray-100 text-sm">
-              {!userData.isAccountVerified && (
+            {/* Dropdown Menu */}
+            <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-lg hidden group-hover:block z-20">
+              <ul className="text-sm py-2">
+                {!userData.isAccountVerified && (
+                  <li
+                    onClick={sendVerificationOtp}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    Verify Email
+                  </li>
+                )}
                 <li
-                  onClick={sendVerificationOtp}
-                  className="py-1 px-2 hover:bg-gray-200 cursor-pointer"
+                  onClick={logout}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 >
-                  Verify email
+                  Logout
                 </li>
-              )}
-
-              <li
-                onClick={logout}
-                className="py-1 px-2 hover:bg-gray-200 cursor-pointer pr-10"
-              >
-                Logout
-              </li>
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
-      ) : (
-        <Button
-          className="flex items-center gap-2 text-sm sm:text-base rounded-full px-5 sm:px-6 py-2"
-          onClick={() => navigate("/login")}
-        >
-          Login <ArrowRight className="w-4 h-4" />
-        </Button>
-      )}
+        ) : (
+          <Button
+            className="bg-red-600 hover:bg-red-700 text-white rounded-full px-5 py-2 text-sm sm:text-base font-medium flex items-center gap-2 transition"
+            onClick={() => navigate("/login")}
+          >
+            Login <ArrowRight className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
     </nav>
   );
 };

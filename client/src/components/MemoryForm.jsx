@@ -69,93 +69,108 @@ const MemoryForm = () => {
   }, [backendUrl]);
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* 🟨 Left 1/3: Form */}
-      <div className="w-full md:w-1/3 p-6 shadow-lg mt-12 md:mt-28">
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          📝 Create Memory
+    <div className="min-h-screen flex flex-col md:flex-row bg-[#0d0d10] text-white  mt-16 relative overflow-hidden">
+      {/* 🕸  faint web backdrop */}
+      <svg className="absolute inset-0 w-full h-full opacity-5 pointer-events-none">
+        <defs>
+          <pattern
+            id="web"
+            width="80"
+            height="80"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M0 0 L80 80 M80 0 L0 80 M40 0 L40 80 M0 40 L80 40"
+              stroke="#ffffff"
+              strokeWidth="0.3"
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#web)" />
+      </svg>
+
+      {/* 📝  Left column: Create Memory form */}
+      <div className="w-full md:w-[420px] p-8 rounded-2xl bg-[#0f0f11]/90 border border-red-500/30 shadow-2xl backdrop-blur-sm">
+        <h2 className="text-3xl font-extrabold flex items-center justify-center gap-2 mb-4">
+          <span className="text-red-500">🕷️</span> Create Memory
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="Enter title"
-            className="w-full border border-gray-300 p-3 rounded-lg"
+            placeholder="Title"
+            className="w-full bg-[#1a1a1d] border border-red-600/30 focus:border-red-500 p-3 rounded-lg placeholder-gray-400 focus:outline-none"
           />
 
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Enter description"
             rows="3"
-            className="w-full border border-gray-300 p-3 rounded-lg"
+            placeholder="Description"
+            className="w-full bg-[#1a1a1d] border border-red-600/30 focus:border-red-500 p-3 rounded-lg placeholder-gray-400 focus:outline-none"
           />
 
           <textarea
             name="funnyIncident"
             value={formData.funnyIncident}
             onChange={handleChange}
-            placeholder="Share a funny incident"
             rows="3"
-            className="w-full border border-gray-300 p-3 rounded-lg"
+            placeholder="Funny incident"
+            className="w-full bg-[#1a1a1d] border border-red-600/30 focus:border-red-500 p-3 rounded-lg placeholder-gray-400 focus:outline-none"
           />
 
           <button
             onClick={handleCreate}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+            className="w-full bg-red-600 hover:bg-blue-600 transition-colors font-semibold py-3 rounded-lg shadow-md"
           >
-            Create
+            Save Memory
           </button>
         </div>
       </div>
 
-      {/* 🟦 Vertical Divider (hidden on mobile) */}
-      <div className="hidden md:block w-[2px] bg-[#121212] mx-1" />
+      {/* 📸  Right column: Memory cards */}
+      <div className="relative z-10 flex-1 p-6 md:p-10 overflow-y-auto">
+        <h3 className="text-3xl font-bold text-center mb-10">🕸  Memories</h3>
 
-      {/* 🟩 Right 2/3: Cards */}
-      <div className="w-full md:flex-1 pt-6 px-6 overflow-y-auto">
-        <h3 className="text-2xl font-semibold text-center mb-32"></h3>
-        <h3 className="text-2xl font-semibold text-center mb-8">📚 Memories</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.isArray(cards) &&
             cards.map((card, index) => (
               <Card
                 key={card._id}
-                className="bg-neutral-900 border border-neutral-800 text-white shadow-xl rounded-xl hover:shadow-2xl transition-all duration-200"
+                className="bg-[#151517] border border-red-600/20 rounded-2xl shadow-lg hover:-translate-y-1 hover:shadow-red-600/20 transition-transform duration-200"
               >
                 <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between text-sm text-gray-400">
-                    <span className="text-orange-500 px-2 py-1 rounded-md text-xs font-semibold tracking-wide">
-                      🎓 Memory #{index + 1}
+                  <div className="flex items-center justify-between text-xs text-gray-400">
+                    <span className="bg-red-600/20 text-red-400 px-2 py-0.5 rounded font-semibold">
+                      🎓 #{index + 1}
                     </span>
-                    <span className="text-xs">
+                    <span>
                       {new Date(card.createdAt).toLocaleDateString("en-IN", {
                         day: "2-digit",
                         month: "short",
                       })}
                     </span>
                   </div>
-                  <CardTitle className="mt-2 text-xl font-bold text-white">
+                  <CardTitle className="mt-2 text-xl font-bold">
                     {card.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <CardDescription className="text-gray-300 leading-relaxed">
+                  <CardDescription className="text-gray-300">
                     {card.description}
                   </CardDescription>
-                  <p className="text-orange-400 italic text-sm">
+                  <p className="text-red-400 italic text-sm">
                     {card.funnyIncident}
                   </p>
-                  <div className="flex flex-wrap gap-2 mt-4">
+                  <div className="flex flex-wrap gap-2">
                     {["#College", "#Masti", "#Yaadein"].map((tag) => (
                       <span
                         key={tag}
-                        className="bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 text-xs px-3 py-1 rounded-full font-medium transition-all duration-200"
+                        className="bg-red-600/10 text-red-400 text-xs px-3 py-1 rounded-full"
                       >
                         {tag}
                       </span>
@@ -166,6 +181,13 @@ const MemoryForm = () => {
             ))}
         </div>
       </div>
+
+      {/* 🕸  Decorative Spidey on far right (hidden on small screens) */}
+      <img
+        src="/spidy.png"
+        alt="Spidey crouch"
+        className="hidden lg:block absolute right-0 bottom-0 w-[400px] object-contain select-none pointer-events-none drop-shadow-[0_10px_20px_rgba(255,0,0,0.5)]"
+      />
     </div>
   );
 };
