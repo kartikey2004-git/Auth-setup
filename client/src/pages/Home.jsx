@@ -1,95 +1,89 @@
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Autoplay from "embla-carousel-autoplay";
-import { AppContext } from "@/context/AppContext";
 import { Sparkles } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
 
 const allCards = [
   {
     src: "/blog.jpeg",
-    title: "We once survived",
-    text: "Search for future layer still pressing among us...",
+    title: "Yo Cuties 👋",
+    text: "Spidey here... dropping webs and random thoughts!",
   },
   {
-    src: "/card2.jpg",
-    title: "Code survived",
-    text: "Lorem Ipsum has been the industry's standard...",
+    src: "/thor.jpg",
+    title: "Sup Asgardians ⚡",
+    text: "Thunder just hit different when Thor walks in, right?",
   },
   {
-    src: "/card3.jpg",
-    title: "Not only fire",
-    text: "Not only fire obstacles, the system lived...",
+    src: "/ironman.jpg",
+    title: "Ironman Mode 😎",
+    text: "Suit up. Show up. Outsmart everyone — that's Stark 101.",
   },
   {
-    src: "/card2.jpg",
-    title: "Code survived",
-    text: "Lorem Ipsum has been the industry's standard...",
+    src: "/captain.jpg",
+    title: "Captain Classic",
+    text: "The guy with the shield, the heart, and the ‘never back down’ vibe.",
   },
 ];
 
 const memoryCards = [
   {
-    title: "🏠 Hostel Life",
+    title: "🗽 Battle of New York",
     content:
-      "2am wali maggi, bina wajah wali hasi, aur woh dosti jo zindagi bhar saath chalegi.",
+      `"Bhai jab aliens aaye the, Tony ne missile leke upar chadh diya. Hum niche sirf popcorn leke dekh rahe the." – Clint`,
   },
   {
-    title: "🍽 Canteen Chronicles",
+    title: "🍗 Shawarma Aftermath",
     content:
-      "Ek plate chowmein, 5 dost, aur endless laughter — yaadein taste se gehri hoti thi.",
+      `"Pura din ladayi ke baad sab chup chaap baith ke shawarma kha rahe the. Loki bhi almost join kar leta!" – Steve`,
   },
   {
-    title: "🪑 Last Bench Legends",
+    title: "🛸 Ultron Ka Hungama",
     content:
-      "Lecture kam, planning zyada. Wahin har trip, har masti ki shuruaat hoti thi.",
+      `"Ultron ko AI banaya tha... par banda full toxic nikla. Stark, ye tera idea tha na?" – Bruce`,
   },
   {
-    title: "🎮 LAN Party Memories",
-    content: "NFS aur CS ke tournament ne hostel ko warzone bana diya tha.",
-  },
-  {
-    title: "🎤 Fresher’s Vibes",
-    content: "Stage ka darr aur applause ka junoon — ek alag hi feeling thi!",
-  },
-  {
-    title: "📸 Group Photo Saga",
+    title: "🪙 Civil War Drama",
     content:
-      "Har group photo ka asli hero — woh banda jo sabko pose karwata tha!",
+      `"Matlab ek pen ke sign ke liye pura team toot gaya. Cap aur Tony ke beech toh full Bigg Boss chalu ho gaya tha." – Sam`,
+  },
+  {
+    title: "💥 Hulk Ka Rampage",
+    content:
+      `"‘Puny god’ bolke Hulk ne Loki ko patak diya tha... aur hum sab ‘rewind’ maar ke dekh rahe the baar baar." – Thor`,
+  },
+  {
+    title: "🧤 Infinity Gauntlet Heist",
+    content:
+      `"Gauntlet ka relay race chalu tha. Banda banda snap rokne mein laga tha. Aur Stark ne last mein sabki entry cancel kar di." – Peter`,
   },
 ];
 
 const testimonials = [
   {
-    name: "Sakshi Jain",
-    text: "Canteen ki chai aur doston ki gossip — best combo ever!",
+    name: "Tony Stark",
+    text: `"I told them I had a plan. Truth is, I made it up as we went. Still won."`,
   },
   {
-    name: "Aman Verma",
-    text: "Hostel ki raatein aur ek dusre ki leg pulling — golden memories!",
+    name: "Steve Rogers",
+    text: `"Language? Bro, do you *know* what Thor says when he's drunk?"`,
   },
   {
-    name: "Ritika Sharma",
-    text: "Classroom ke bahar wali baatein, sabse special hoti thi!",
+    name: "Natasha Romanoff",
+    text: `"Half of these idiots would be dead if I didn’t babysit them during missions."`,
   },
   {
-    name: "Rohit Chauhan",
-    text: "Exam ke baad ka Chatori Gali trip — bhool hi nahi sakte!",
+    name: "Thor Odinson",
+    text: `"I once brought beer to a mission briefing. Midgardians were not amused."`,
   },
   {
-    name: "Shruti Nair",
-    text: "Cultural fest mein Spider-Man ban ke photo kheechwaya tha 😄",
+    name: "Bruce Banner",
+    text: `"‘Don’t make me angry’ was never just a line. Ask Sokovia."`,
   },
   {
-    name: "Manav Joshi",
-    text: "ABES ke canteen wali cold coffee > Starbucks forever!",
+    name: "Peter Parker",
+    text: `"They said ‘stay on the jet’. I didn’t. Now there’s a meme."`,
   },
 ];
 
@@ -101,7 +95,7 @@ const Home = () => {
       <Navbar />
 
       <section
-        className="w-full relative min-h-[500px] md:min-h-[900px] flex items-center justify-center text-center px-6 shadow-lg overflow-hidden"
+        className="w-full relative min-h-[700px] md:min-h-[900px] flex items-center justify-center text-center px-6 shadow-lg overflow-hidden"
         style={{
           backgroundImage: 'url("/mount.jpeg")',
           backgroundSize: "cover",
